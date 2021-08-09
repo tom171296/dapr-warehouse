@@ -1,0 +1,28 @@
+version: '3'
+services:
+  warehouse-management:
+    build: ./WarehouseManagement
+    # ports: 
+    depends_on: 
+      - placement
+  
+  warehouse-management-dapr:
+    image: "daprio/daprd:edge"
+    command: [
+      "./daprd",
+     "-app-id", "WarehouseManagement",
+     "-app-port", "3000",
+     "-placement-host-address", "placement:50006"
+     ]
+    volumes:
+        - "./dapr/components/:/components"
+    depends_on:
+      - WarehouseManagement
+    network_mode: "service:warehouse-management"
+
+
+  placement:
+    image: "daprio/dapr"
+    command: ["./placement", "-port", "50006"]
+    ports:
+      - "50006:50006"
