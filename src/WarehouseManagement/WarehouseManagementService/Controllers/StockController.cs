@@ -6,7 +6,7 @@ namespace WarehouseManagementService.Controllers
     public class StockController : ControllerBase
     {
         [HttpPost("entrysensor")]
-        public IActionResult StockEntryAsync()
+        public IActionResult StockEntryAsync(StockDelivered stockDelivered)
         {
             return Ok();
         }
