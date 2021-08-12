@@ -4,9 +4,15 @@ using WarehouseManagementService.Events;
 
 namespace WarehouseManagementService.Controllers
 {
-    [Controller]
+    [ApiController]
+    [Route("")]
     public class StockController : ControllerBase
     {
+        [HttpGet("test")]
+        public IActionResult test(){
+            return Ok();
+        }
+
         [HttpPost("entrysensor")]
         public IActionResult StockEntryAsync(StockDelivered stockDelivered)
         {

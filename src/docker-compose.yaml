@@ -7,27 +7,29 @@ services:
     volumes: 
      - ./infrastructure/mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
 
-
   ##################################
   ###### WarehouseManagement #######
 
   warehouse-management:
     build: ./WarehouseManagement
     ports: 
-      - "5000:5000"
+      - "5000:80"
   
   warehouse-management-dapr:
     image: "daprio/daprd:edge"
     command: [
       "./daprd",
-     "-app-id", "WarehouseManagement",
-     "-app-port", "5000"
-    #  "-placement-host-address", "placement:50006"
+      "-app-id", "WarehouseManagement",
+      "-app-port", "80",
+      "-components-path", "./components"
+      # "-placement-host-address", "placement:50006"
      ]
     volumes:
-        - "./dapr/components/:/components"
+      - "./dapr/components/:/components"
     depends_on:
-      - WarehouseManagement
+      - warehouse-management
+      # - placement
+      - mosquitto
     network_mode: "service:warehouse-management"
 
   ##################################
@@ -36,9 +38,13 @@ services:
   simulation:
     build: ./StockDeliverySimulation
     depends_on: 
-      - WarehouseManagement
+      - warehouse-management
+      - mosquitto
     environment: 
       - MQTT_HOST=mosquitto
+
+  ##################################
+  ###### Dapr #######
 
   # placement:
   #   image: "daprio/dapr"

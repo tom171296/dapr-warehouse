@@ -2,7 +2,7 @@ apiVersion: dapr.io/v1alpha1
 kind: Component
 metadata:
   name: entrysensor
-  namespace: dapr-warehouse
+  namespace: default
 spec:
   type: bindings.mqtt
   version: v1
@@ -11,5 +11,7 @@ spec:
     value: mqtt://mosquitto:1883
   - name: topic
     value: stockupdate/entrysensor
+  - name: consumerID
+    value: "{uuid}"
 scopes:
   - WarehouseManagement

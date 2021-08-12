@@ -12,17 +12,26 @@ namespace StockDeliverySimulation
     {
         public static async Task Main(string[] args)
         {
-            var mqttHost = Environment.GetEnvironmentVariable("MQTT_HOST") ?? "localhost";
-            var client = await MqttClient.CreateAsync(mqttHost, 1883);
-            for (int i = 0; i < 100; i++)
+            try
             {
-                Console.WriteLine("Sending message " + i);
-                var eventJson = JsonSerializer.Serialize(new StockDelivered());
-                var message = new MqttApplicationMessage("stockupdate/entrysensor", Encoding.UTF8.GetBytes(eventJson));
-                await client.PublishAsync(message, MqttQualityOfService.AtMostOnce);
-                Console.WriteLine("Message send " + i);
-                Thread.Sleep(TimeSpan.FromSeconds(1));
+                var mqttHost = Environment.GetEnvironmentVariable("MQTT_HOST") ?? "localhost";
+                var client = await MqttClient.CreateAsync(mqttHost, 1883);
+                await client.ConnectAsync(new MqttClientCredentials(clientId: "Simulation"));
+                for (int i = 0; i < 100; i++)
+                {
+                    Console.WriteLine("Sending message " + i);
+                    var eventJson = JsonSerializer.Serialize(new StockDelivered { Name = i.ToString() });
+                    var message = new MqttApplicationMessage("stockupdate/entrysensor", Encoding.UTF8.GetBytes(eventJson));
+                   
+                    await client.PublishAsync(message, MqttQualityOfService.AtLeastOnce);
+                    Console.WriteLine("Message send " + i);
+                    Thread.Sleep(TimeSpan.FromSeconds(1));
+                }
             }
+            catch(Exception ex){
+                Console.WriteLine($"exception occurd + {ex.Message}");
+            }
+            
         }
     }
 }
