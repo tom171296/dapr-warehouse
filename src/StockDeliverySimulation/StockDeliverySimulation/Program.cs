@@ -20,7 +20,7 @@ namespace StockDeliverySimulation
                 for (int i = 0; i < 100; i++)
                 {
                     Console.WriteLine("Sending message " + i);
-                    var eventJson = JsonSerializer.Serialize(new StockDelivered { Name = i.ToString() });
+                    var eventJson = JsonSerializer.Serialize(new StockDelivered { Name = i.ToString(), Id = i.ToString() });
                     var message = new MqttApplicationMessage("stockupdate/entrysensor", Encoding.UTF8.GetBytes(eventJson));
                    
                     await client.PublishAsync(message, MqttQualityOfService.AtLeastOnce);

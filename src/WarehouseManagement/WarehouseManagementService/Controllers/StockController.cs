@@ -1,23 +1,44 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System;
 using WarehouseManagementService.Events;
+using WarehouseManagementService.Models;
+using WarehouseManagementService.Repositories;
 
-namespace WarehouseManagementService.Controllers
+[ApiController]
+[Route("")]
+public class StockController : ControllerBase
 {
-    [ApiController]
-    [Route("")]
-    public class StockController : ControllerBase
-    {
-        [HttpGet("test")]
-        public IActionResult test(){
-            return Ok();
-        }
+    private readonly ILogger<StockController> _logger;
+    private readonly IStockStateRepository _stockStateRepository;
 
-        [HttpPost("entrysensor")]
-        public IActionResult StockEntryAsync(StockDelivered stockDelivered)
+    public StockController(
+        ILogger<StockController> logger,
+        IStockStateRepository stockStateRepository)
+    {
+        _logger = logger;
+        _stockStateRepository = stockStateRepository;
+    }
+
+    [HttpPost("entrysensor")]
+    public async Task<IActionResult> StockEntryAsync(StockDelivered stockDelivered)
+    {
+        try
         {
-            Console.WriteLine("received message via Dapr");
+            _logger.LogInformation("Received new stock delivery {1}", stockDelivered.Id);
+
+            var stockState = new StockState
+            {
+                Id = stockDelivered.Id
+            };
+
+            await _stockStateRepository.SaveWarehouseState(stockState);
+
             return Ok();
         }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occured while processing stock delivery");
+            return StatusCode(500); 
+        }
+        
     }
 }

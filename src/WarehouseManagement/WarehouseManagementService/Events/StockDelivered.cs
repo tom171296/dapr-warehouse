@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace WarehouseManagementService.Events
+﻿namespace WarehouseManagementService.Events
 {
     public class StockDelivered
     {
+        public string Id { get; set; }
     }
 }
