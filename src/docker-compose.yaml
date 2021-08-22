@@ -21,6 +21,7 @@ services:
     build: ./WarehouseManagement
     ports: 
       - "5000:80"
+      - "9090:9090"
   
   warehouse-management-dapr:
     image: "daprio/daprd:edge"
@@ -28,11 +29,14 @@ services:
       "./daprd",
       "-app-id", "WarehouseManagement",
       "-app-port", "80",
-      "-components-path", "./components"
+      "-components-path", "./components",
+      "-log-as-json", "true",
+      "config", ./config.yaml
       # "-placement-host-address", "placement:50006"
      ]
     volumes:
       - "./dapr/components/:/components"
+      - "./WarehouseManagement/dapr-config.yaml:/config.yaml"
     depends_on:
       - warehouse-management
       # - placement
